@@ -63,7 +63,7 @@ $$
 \end{align*}
 $$
 Therefore CLT applies and 
-$$\lim_{H\to\infty}\displaystyle\sum_{j=1}^Hv_{jk}\cdot h_j(x^{(p)})\sim\mathcal(0,H\sigma_v^2\:\mathbb{E}\left[h_j(x^{(p)})^2\right])
+$$\lim_{H\to\infty}\displaystyle\sum_{j=1}^Hv_{jk}\cdot h_j(x^{(p)})\sim\mathcal{N}\left(0,H\sigma_v^2\:\mathbb{E}\left[h_j(x^{(p)})^2\right]\right)
 $$
 </li>
 </ol>
