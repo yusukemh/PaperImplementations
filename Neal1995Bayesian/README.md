@@ -4,16 +4,20 @@
 Notation: $\mathbf{x}=(x_1,x_2,...,x_i,...)$
 
 The Bayesian Neural Network is defined by
-$$\begin{cases}
+```math
+\begin{cases}
 f_k(\mathbf{x})&=b_k+\displaystyle\sum_{j=1}^{H}v_{jk}\cdot h_j(\mathbf{x})\\
 h_j(\mathbf{x})&=\text{tanh}\left(a_j+\displaystyle\sum_{i=1}^Iu_{ij}x_i\right)
-\end{cases}$$
-$$\begin{cases}
+\end{cases}
+```
+```math
+\begin{cases}
 u_{ij}&\sim\mathcal{N}(0, \sigma_u^2)\\
 a_j&\sim\mathcal{N}(0, \sigma_a^2)\\
 v_{jk}&\sim\mathcal{N}(0, \sigma_v^2)\\
 b_k&\sim\mathcal{N}(0, \sigma_b^2)
-\end{cases}$$
+\end{cases}
+```
 We show that BNN approaches GP as $H\rightarrow\infty$ by showing
 
 1. $h_j(x^{(p)})$ are i.i.d. for all $j$ for a fixed $x^{(p)}$
@@ -40,9 +44,9 @@ Let $$X:\Omega\rightarrow\mathbb{R}^d\quad\text{and}\quad Y:\Omega\rightarrow\ma
 
 2. This follows from the fact that $h_j(x^{(p)})$ are i.i.d. and $v_{jk}$ are i.i.d..
 
-
-$$
+```math
 \begin{align*}
 \mathbb{E}\left[v_{jk}\cdot h_j(x^{(p)})\right]&=\mathbb{E}\left[v_{jk}\right]\mathbb{E}\left[{h_j}\right]\quad\text{by independence}\\
 &=0\quad\because\mathbb{E}\left[v_{jk}\right]=0
-\end{align*}$$
+\end{align*}
+```
