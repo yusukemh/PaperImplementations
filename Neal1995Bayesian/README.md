@@ -34,7 +34,7 @@ Let $$X:\Omega\rightarrow\mathbb{R}^d\quad\text{and}\quad Y:\Omega\rightarrow\ma
 >
 >> **_THEOREM 1.2:_** A continuous function is measurable.
 > 
->Since $u_{ij}$ are independent, $u_{ij}\cdot x_i^{(p)}$ are independent. Therefore, their sums, $\displaystyle\sum_{i=1}^Iu_{ij}\cdot x^{(p)}_i$, are independent (take $f_j=\sum\quad\forall j$ in Theorem 1.1). It then follows that applying $\text{tanh}$ or $\text{step}$ function preserves independence (because they are both measurable functions), i.e., $h_j(x^{(p)})$ are independent.<br><sub><sub><i>*$a_j$ are ignored in this proof, but it can be incorporated by considering $a_j=u_{(i+1)j}$ and $x^{(p)}_{i+1}=1$, much like omission of bias term in neural network parameterization.</i></sub></sub><br>
+>Since $u_{ij}$ are independent, $u_{ij}\cdot x_i^{(p)}$ are independent. Therefore, their sums, $\displaystyle\sum_{i=1}^Iu_{ij}\cdot x^{(p)}_i$, are independent (take $f_j=\sum\quad\forall j$ in Theorem 1.1). It then follows that applying $\text{tanh}$ or $\text{step}$ function preserves independence (because they are both measurable functions), i.e., $h_j(x^{(p)})$ are independent.<br><sub><sub><i>*$a_j$ are ignored in this proof, but it can be incorporated by reparameterizing $a_j=u_{(i+1)j}$ and $x^{(p)}_{i+1}=1$, much like omission of bias term in neural network parameterization.</i></sub></sub><br>
 
 
 > **_NOTE:_** In fact, $h_j(x^{(p)})$ are not necessarily i.i.d. if $u_{ij}$ are not i.i.d.. To see this, consider the case where $u_{\cdot 1}$ is from a Gaussian distribtion and $u_{\cdot 2}$ are from a Uniform distirbution. Then clearly $h_1(x^{(p)})$ and $h_2(x^{(p)})$ are not i.i.d..
@@ -57,7 +57,7 @@ $$
 \begin{align*}
 \mathbb{E}\left[v_{jk}\cdot h_j(x^{(p)})\right]&=\mathbb{E}\left[v_{jk}\right]\mathbb{E}\left[{h_j(x^{(p)})}\right]\quad\text{by independence}\\
 &=0\quad\cdots(1)\quad\because\mathbb{E}\left[v_{jk}\right]=0\\
-\text{Var}\left[v_{jk}\cdot h_j(x^{(p)})\right]&=\mathbb{E}\left[\left(v_{jk}\cdot h_j(x^{(p)})\right)^2\right]-\mathbb{E^2}\left[v_{jk}\cdot h_j(x^{(p)})\right]\\
+\text{Var}\left[v_{jk}\cdot h_j(x^{(p)})\right]&=\mathbb{E}\left[\left(v_{jk}\cdot h_j(x^{(p)})\right)^2\right]-\mathbb{E}^2\left[v_{jk}\cdot h_j(x^{(p)})\right]\\
 &=\mathbb{E}\left[v_{jk}^2\right]\mathbb{E}\left[h_j(x^{(p)})^2\right] - 0\quad\quad\text{by independence, and by (1)}\\
 &=\sigma_v^2\:\mathbb{E}\left[h_j(x^{(p)})^2\right]<\infty
 \end{align*}
