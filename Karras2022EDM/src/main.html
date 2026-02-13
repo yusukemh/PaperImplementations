@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KDE Particle Attraction - p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+  </style>
+</head>
+<body>
+<script>
+let stars = [];
+let particles = [];
+let bandwidthSlider;
+let spawnButton, clearButton;
+let resolution = 15;
+let levels = [];
+
+class Star {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+  }
+
+  draw() {
+    noStroke();
+    // fill(255, 220, 120);
+    // fill(240);  // gray
+    // fill(255, 60, 60);
+    fill(255, 240, 0);
+    circle(this.pos.x, this.pos.y, 15);
+  }
+}
+
+class Particle {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.velocity = createVector(0, 0);
+  }
+
+  // moveTowardsDensity(bw) {
+  //   let h = 1;
+  //   let center = kde(this.pos.x, this.pos.y, bw);
+  //   let dx = kde(this.pos.x + h, this.pos.y, bw) - kde(this.pos.x - h, this.pos.y, bw);
+  //   let dy = kde(this.pos.x, this.pos.y + h, bw) - kde(this.pos.x, this.pos.y - h, bw);
+
+  //   let scale = 5000000; // scale gradient for visible movement
+  //   // let baseScale = 5000000;
+  //   // let scale = keyIsDown(32) ? baseScale * 2 : baseScale;  // 32 = space key
+  //   this.velocity.set(dx * scale, dy * scale);
+  //   this.pos.add(this.velocity);
+
+  //   this.pos.x = constrain(this.pos.x, 0, width);
+  //   this.pos.y = constrain(this.pos.y, 0, height);
+  // }
+
+  moveTowardsDensity(bw) {
+    let h = 1;
+
+    let dx = kde(this.pos.x + h, this.pos.y, bw) -
+             kde(this.pos.x - h, this.pos.y, bw);
+
+    let dy = kde(this.pos.x, this.pos.y + h, bw) -
+             kde(this.pos.x, this.pos.y - h, bw);
+
+    let scale = 5000000;
+
+    // keep velocity tied to field (for drawing)
+    this.velocity.set(dx * scale, dy * scale);
+
+    // movement speed multiplier (space = faster)
+    let speedMultiplier = keyIsDown(32) ? 4 : 1;
+
+    this.pos.x += this.velocity.x * speedMultiplier;
+    this.pos.y += this.velocity.y * speedMultiplier;
+
+    this.pos.x = constrain(this.pos.x, 0, width);
+    this.pos.y = constrain(this.pos.y, 0, height);
+}
+
+
+  draw() {
+    noStroke();
+    fill(0, 255, 100, 180);
+    circle(this.pos.x, this.pos.y, 4);
+
+    // draw line indicating direction
+    stroke(0, 255, 100, 200);
+    strokeWeight(1);
+
+    // parameters
+    let maxLen = 20;
+    let minLen = 5;
+    let gradThreshold = 0.1; // adjust based on gradient magnitude scale
+
+    // scaled velocity for display
+    let dir = this.velocity.copy().mult(20);
+    let mag = dir.mag();
+
+    if (mag < gradThreshold) {
+        // gradient too small → no line
+        return;
+    }
+
+    // enforce minimum and maximum length
+    if (mag < minLen) dir.setMag(minLen);
+    if (mag > maxLen) dir.setMag(maxLen);
+
+    line(this.pos.x, this.pos.y, this.pos.x + dir.x, this.pos.y + dir.y);
+}
+
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight - 60);
+
+  for (let i = 0; i < 10; i++) {
+    stars.push(new Star(random(width), random(height)));
+  }
+
+  bandwidthSlider = createSlider(10, 100, 50, 1);
+  bandwidthSlider.position(20, windowHeight - 50);
+  bandwidthSlider.style('width', '300px');
+
+  spawnButton = createButton('Spawn 100 particles');
+  spawnButton.position(340, windowHeight - 50);
+  spawnButton.mousePressed(() => {
+    for (let i = 0; i < 3000; i++) {
+      particles.push(new Particle(random(width), random(height)));
+    }
+  });
+
+  clearButton = createButton('Clear particles');
+  clearButton.position(480, windowHeight - 50);
+  clearButton.mousePressed(() => {
+    particles = [];
+  });
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight - 60);
+  bandwidthSlider.position(20, windowHeight - 50);
+  spawnButton.position(340, windowHeight - 50);
+  clearButton.position(480, windowHeight - 50);
+}
+
+function draw() {
+  background(0);
+
+  let bw = bandwidthSlider.value();
+
+  let maxKDE = 0;
+  for (let x = 0; x < width; x += resolution) {
+    for (let y = 0; y < height; y += resolution) {
+      let k = kde(x, y, bw);
+      if (k > maxKDE) maxKDE = k;
+    }
+  }
+
+  let numContours = 10;
+  levels = [];
+  for (let i = 1; i <= numContours; i++) {
+    levels.push(maxKDE * i / (numContours + 1));
+  }
+
+  drawContours(bw);
+
+  
+  for (let p of particles) {
+    p.moveTowardsDensity(bw);
+    p.draw();
+  }
+  
+  for (let s of stars) {
+    s.draw();
+  }
+
+  noStroke();
+  fill(255);
+  textSize(16);
+  text("KDE bandwidth: " + bw.toFixed(1), 20, windowHeight - 10);
+}
+
+function kde(x, y, bw) {
+  let sum = 0;
+  for (let s of stars) {
+    let dx = x - s.pos.x;
+    let dy = y - s.pos.y;
+    let r2 = dx*dx + dy*dy;
+    sum += exp(-0.5 * r2 / (bw*bw));
+  }
+  return sum / (stars.length * TWO_PI * bw * bw);
+}
+
+function drawContours(bw) {
+  stroke(100, 180, 255);
+  strokeWeight(1.2);
+  noFill();
+
+  for (let level of levels) {
+    for (let x = 0; x < width; x += resolution) {
+      for (let y = 0; y < height; y += resolution) {
+        let x1 = x;
+        let y1 = y;
+        let x2 = x + resolution;
+        let y2 = y + resolution;
+
+        let v_tl = kde(x1, y1, bw);
+        let v_tr = kde(x2, y1, bw);
+        let v_br = kde(x2, y2, bw);
+        let v_bl = kde(x1, y2, bw);
+
+        let tl = v_tl > level ? 1 : 0;
+        let tr = v_tr > level ? 1 : 0;
+        let br = v_br > level ? 1 : 0;
+        let bl = v_bl > level ? 1 : 0;
+
+        let state = tl * 8 + tr * 4 + br * 2 + bl * 1;
+
+        function interp(xa, ya, va, xb, yb, vb) {
+          let t = (level - va) / (vb - va);
+          t = constrain(t, 0, 1);
+          return createVector(lerp(xa, xb, t), lerp(ya, yb, t));
+        }
+
+        let top    = interp(x1, y1, v_tl, x2, y1, v_tr);
+        let right  = interp(x2, y1, v_tr, x2, y2, v_br);
+        let bottom = interp(x1, y2, v_bl, x2, y2, v_br);
+        let left   = interp(x1, y1, v_tl, x1, y2, v_bl);
+
+        switch (state) {
+          case 1: case 14: line(bottom.x, bottom.y, left.x, left.y); break;
+          case 2: case 13: line(right.x, right.y, bottom.x, bottom.y); break;
+          case 3: case 12: line(right.x, right.y, left.x, left.y); break;
+          case 4: case 11: line(top.x, top.y, right.x, right.y); break;
+          case 5:
+            line(top.x, top.y, left.x, left.y);
+            line(right.x, right.y, bottom.x, bottom.y);
+            break;
+          case 6: case 9: line(top.x, top.y, bottom.x, bottom.y); break;
+          case 7: case 8: line(top.x, top.y, left.x, left.y); break;
+        }
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>

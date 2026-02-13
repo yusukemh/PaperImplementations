@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Projects</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-weight: 600;
+    }
+
+    .project-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .project-list li {
+      margin: 15px 0;
+    }
+
+    .project-link {
+      display: block;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .project-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>My Projects</h1>
+
+    <ul class="project-list">
+      <li>
+        <a class="project-link" href="Karras2022EDM/src/main.html">
+          Project A
+        </a>
+      </li>
+
+      <li>
+        <a class="project-link" href="projectB/src/main.html">
+          Project B
+        </a>
+      </li>
+
+      <!-- Uncomment if available -->
+      <!--
+      <li>
+        <a class="project-link" href="projectC/src/main.html">
+          Project C
+        </a>
+      </li>
+      -->
+    </ul>
+
+    <footer>
+      Hosted on GitHub Pages
+    </footer>
+  </div>
+</body>
+</html>
